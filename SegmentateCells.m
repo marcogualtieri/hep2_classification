@@ -1,16 +1,10 @@
-function components = SegmentateCells(filename, plotSteps)
-
-    close all;
+function components = SegmentateCells(imgGray, plotSteps)
 
     if nargin < 2
         plotSteps = false;
     end
 
     % original
-    imgOriginal = imread(filename);
-    if(plotSteps); figure, imshow(imgOriginal), title('Original'); end;
-    % convert to grayscale
-    imgGray = rgb2gray(imgOriginal);
     if(plotSteps); figure, imshow(imgGray), title('Gray'); end;
     % adjust contrast
     imgGrayNorm = uint8(255*mat2gray(imadjust(imgGray)));
@@ -59,14 +53,15 @@ function components = SegmentateCells(filename, plotSteps)
     
     % print mask overlay
     mask_perim2 = bwperim(mask_watershed2);
-    overlay2 = imoverlay(imgOriginal, mask_perim2, [1 .3 .3]);
+    overlay2 = imoverlay(imgGray, mask_perim2, [1 .3 .3]);
     if(plotSteps); figure, imshow(overlay2), title('Mask - Perimeter overlay'); end;
     
     % remove cells from the border
     mask_watershed2 = imclearborder(mask_watershed2);
+    
     % return segmented components
-    cc = bwconncomp(mask_watershed2, 8);
-    components = labelmatrix(cc);
-    if(plotSteps); figure, imshow(label2rgb(components)), title('Mask - Components'); end;
+    components = bwconncomp(mask_watershed2, 8);
+    labeled_components = labelmatrix(components);
+    if(plotSteps); figure, imshow(label2rgb(labeled_components)), title('Mask - Components'); end;
 
 end
