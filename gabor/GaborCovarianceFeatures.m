@@ -1,4 +1,4 @@
-function [outCov, isSPD] = GaborCovarianceFeatures(image, mask, GR, GI, thresholdWhitePixels, topHatRadiusA, concatExtraFeatures, topHatRadiusB)
+function [outCov, isSPD] = GaborCovarianceFeatures(image, mask, GR, GI, thresholdWhitePixels, concatExtraFeatures, topHatRadiusA, topHatRadiusB)
     isSPD = 1;
     outCov = [];
     if sum(mask(:)) / (size(mask, 1) * size(mask, 2)) < thresholdWhitePixels

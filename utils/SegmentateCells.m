@@ -1,5 +1,5 @@
 function [numCells, cellImages, cellMasks] = SegmentateCells(imgGray)
-    
+
     imgGray = double(imgGray)/255.0;
     
     components = GetCellComponents(imgGray);
@@ -21,8 +21,8 @@ end
 
 function components = GetCellComponents(imgGray)
           
-    % adjust contrast
     imgGrayNorm = uint8(255*mat2gray(imadjust(imgGray)));
+    
     % remove noise with adaptive filter
     imgGrayNorm = wiener2(imgGrayNorm, [5 5]);
     

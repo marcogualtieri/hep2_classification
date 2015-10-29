@@ -29,9 +29,9 @@ classdef configuration
            'show_plot', false);
        
        % Features Extraction options
-       concatExtraFeatures = true;
+       concatExtraFeatures = false;
        topHatRadiusA = false;
-       topHatRadiusB = 30;
+       topHatRadiusB = false;
        
        %SVM kFolds for cross-validation
        kFolds = 8;
