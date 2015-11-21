@@ -10,7 +10,7 @@ function [] = EvaluateResults(labels, predictedLabels)
         'VariableNames', {'Class', 'Total', 'Correct', 'Rate'})
     % Print results
     correctClassifiedCells = sum(classCorrectedPred);
-    fprintf('Correct classified cells: %d / %d\n', correctClassifiedCells, samplesNumber);
+    fprintf('Correct classified elements: %d / %d\n', correctClassifiedCells, samplesNumber);
     accuracy = correctClassifiedCells/samplesNumber;
     fprintf('Accuracy: %.2f %%\n', accuracy * 100);
 end

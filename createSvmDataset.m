@@ -1,10 +1,9 @@
 clear; clc; close all;
-
 addpath('./gabor');
+addpath('./utils');
+mkdir('./mat');
 
-loadTrainingSet();
-
-load('./mat/trainSet.mat');
+trainSet = loadTrainingSet();
 
 [GR, GI] = CreateGaborFilters(configuration.Gabor_options);
 
@@ -13,13 +12,6 @@ processedImgCounter = 1;
 startTime = clock;
 
 imageNumber = length(trainSet);   
-
-if(configuration.concatExtraFeatures)
-    gaborFeaturesLength = 27;
-else
-    gaborFeaturesLength = 15;
-end
-covdFeaturesLength = (((gaborFeaturesLength*gaborFeaturesLength)-gaborFeaturesLength)/2)+gaborFeaturesLength;
 
 svmDataset = [];
 
@@ -32,8 +24,11 @@ for imageId = 1:imageNumber
     if(exist(char(filename), 'file') ~= 2)
        warning('Image %s not found. Will not be processed.\n', char(filename));
     else
-        % convert to gray scale
-        image = rgb2gray(imread(filename));
+        image = imread(filename);
+        % convert to gray scale if needed
+        if(size(image,3)~=1)
+            image = rgb2gray(image);
+        end
         % segmentate cells and extract features 
         [numCells, cellImages, cellMasks] = SegmentateCells(image);
         for cellIndex = 1:numCells

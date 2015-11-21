@@ -1,4 +1,4 @@
- function loadTrainingSet ()
+ function [trainSet] = loadTrainingSet()
 %Load training set labels from CSV file and generate a mat file
 
     import configuration.*;
@@ -74,9 +74,6 @@
 
     table(image_ids', validation_labels', filenames, ...
     'VariableNames', {'ID', 'Label', 'Filename'})
-    
-    mkdir('./mat');
-    save('./mat/trainSet', 'trainSet');
     
     fprintf('Training Set saved correctly!\n\n');
 end

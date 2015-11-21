@@ -1,15 +1,34 @@
 clear; clc; close all;
+addpath('./utils');
+
 fprintf('-- SVM evaluate result --\n');
 startTime = clock;
 
 load('./mat/svm_dataset');
-load('./mat/svm_model');
+load('./mat/cp_ecoc_model');
 
+features = [svmDataset.Features]';
 cellRealLabels = {svmDataset.Labels};
 
-% Predict labels on the model
-cellPredictedLabels = kfoldPredict(model);
-% predictedLabels = predict(model, features');
+% If the prediction is performed on the same dataset used for training,
+% we use kfoldPredict method (for each fold of the datset, labels are 
+% predicted for in-fold observations using a model trained on out-of-fold observations.
+if(cpEcocModel.X == features)
+    cellPredictedLabels = kfoldPredict(cpEcocModel);
+
+% If the prediction is performed on a different dataset, we use all the k
+% models to predict classes, then we use a majority voting strategy
+else
+    cellPredictedLabelsTmp = [];
+    for i=1:length(cpEcocModel.Trained)
+        cellPredictedLabelsTmp = [cellPredictedLabelsTmp predict(cpEcocModel.Trained{i}, features')];
+    end
+    cellPredictedLabels = [];
+    for j=1:length(cellPredictedLabelsTmp)
+        [unique_strings, ~, string_map] = unique(cellPredictedLabelsTmp(j,:));
+        cellPredictedLabels = [cellPredictedLabels unique_strings(mode(string_map))];
+    end
+end
 
 %%%% CELL LEVEL %%%%
 fprintf('-- Cell level --\n');
