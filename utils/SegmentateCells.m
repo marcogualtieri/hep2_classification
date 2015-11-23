@@ -49,6 +49,11 @@ function components = GetCellComponents(imgGray)
     % remove cells from the border
     mask_watershed = imclearborder(mask_watershed);
     
+    % uncomment this to show result of segmentation
+%     mask_perimeter = bwperim(mask_watershed);
+%     overlay = imoverlay(imgGray, imdilate(mask_perimeter, true(3)), [1 .3 .3]);
+%     figure, imshow(overlay), title('Segmentation');
+    
     % return segmented components
     components = bwconncomp(mask_watershed, 8);
 end
