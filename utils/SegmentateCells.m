@@ -1,8 +1,8 @@
-function [numCells, cellImages, cellMasks] = SegmentateCells(imgGray)
+function [numCells, cellsPerimeter, cellImages, cellMasks] = SegmentateCells(imgGray)
 
     imgGray = double(imgGray)/255.0;
     
-    components = GetCellComponents(imgGray);
+    [components, cellsPerimeter] = GetCellComponents(imgGray);
     
     imgProps = regionprops(components, 'Image', 'SubarrayIdx');
     
@@ -19,7 +19,7 @@ function [numCells, cellImages, cellMasks] = SegmentateCells(imgGray)
 
 end
 
-function components = GetCellComponents(imgGray)
+function [components, mask_perimeter] = GetCellComponents(imgGray)
           
     imgGrayNorm = uint8(255*mat2gray(imadjust(imgGray)));
     
@@ -49,10 +49,8 @@ function components = GetCellComponents(imgGray)
     % remove cells from the border
     mask_watershed = imclearborder(mask_watershed);
     
-    % uncomment this to show result of segmentation
-%     mask_perimeter = bwperim(mask_watershed);
-%     overlay = imoverlay(imgGray, imdilate(mask_perimeter, true(3)), [1 .3 .3]);
-%     figure, imshow(overlay), title('Segmentation');
+    % generate segmentation perimeter
+    mask_perimeter = bwperim(mask_watershed);
     
     % return segmented components
     components = bwconncomp(mask_watershed, 8);

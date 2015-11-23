@@ -36,13 +36,16 @@ EvaluateResults(cellRealLabels, cellPredictedLabels);
 
 %%%% IMAGE LEVEL %%%%
 fprintf('\n-- Image level --\n');
-imageNumber = max([svmDataset.ImageId]);
+imageIds = unique([svmDataset.ImageId]);
+
 imageRealLabels = [];
 imagePredictedLabels = [];
 wrongImageIds = [];
 wrongImageRealLabels = [];
 wrongImagePredictedLabels = [];
-for imageId = 1:imageNumber
+
+for imageCounter = 1:size(imageIds,2)
+    imageId = imageIds(imageCounter);
     imageCellsPredictedLabels = cellPredictedLabels([svmDataset.ImageId]==imageId);
     if(length(imageCellsPredictedLabels)>0)
         imageRealLabel = unique(cellRealLabels([svmDataset.ImageId]==imageId));
@@ -62,7 +65,7 @@ end
 EvaluateResults(imageRealLabels, imagePredictedLabels);
 
 % Identify not correctly classified images
-imageIds = unique([svmDataset.ImageId]);
+
 fprintf('\n-- Wrongly classified images --\n');
 table(wrongImageIds', wrongImageRealLabels', wrongImagePredictedLabels', ...
         'VariableNames', {'ImageId', 'Real', 'Predicted'})

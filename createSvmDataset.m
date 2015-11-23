@@ -18,9 +18,12 @@ svmDataset = [];
 fprintf('Processing %d images\n\n', imageNumber);
 fprintf('Image processed: 0 / 0.00 %% - Elapsed Time: 0.00 s\n');
 
-for imageId = 1:imageNumber
-    filename = char(trainSet(imageId, 3)); 
-
+for imageCounter = 1:imageNumber
+    
+    imageId = cell2mat(trainSet(imageCounter, 1));
+    label = trainSet(imageCounter, 2);
+    filename = char(trainSet(imageCounter, 3)); 
+    
     if(exist(char(filename), 'file') ~= 2)
        warning('Image %s not found. Will not be processed.\n', char(filename));
     else
@@ -30,7 +33,7 @@ for imageId = 1:imageNumber
             image = rgb2gray(image);
         end
         % segmentate cells and extract features 
-        [numCells, cellImages, cellMasks] = SegmentateCells(image);
+        [numCells, cellsPerimeter, cellImages, cellMasks] = SegmentateCells(image);
         for cellIndex = 1:numCells
             [cellFeatures, isSPD] = GaborCovarianceFeatures(cellImages{cellIndex}, cellMasks{cellIndex}, GR, GI, 0.1, ...
                                     configuration.concatExtraFeatures, configuration.topHatRadiusA, configuration.topHatRadiusB);
@@ -40,8 +43,8 @@ for imageId = 1:imageNumber
                                    'ImageId', imageId, ...
                                    'CellId', cellIndex, ...
                                    'Features', cellFeatures, ...
-                                   'Labels', trainSet(imageId, 2))...
-                               ];
+                                   'Labels', label...
+                               )];
             else
                 warning('NON SPD COVD MATRIX');
             end
