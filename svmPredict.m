@@ -13,7 +13,7 @@ cellRealLabels = {svmDataset.Labels};
 % If the prediction is performed on the same dataset used for training,
 % we use kfoldPredict method (for each fold of the datset, labels are 
 % predicted for in-fold observations using a model trained on out-of-fold observations.
-if(cpEcocModel.X == features)
+if(isequal(cpEcocModel.X, features))
     cellPredictedLabels = kfoldPredict(cpEcocModel);
 
 % If the prediction is performed on a different dataset, we use all the k
@@ -21,7 +21,7 @@ if(cpEcocModel.X == features)
 else
     cellPredictedLabelsTmp = [];
     for i=1:length(cpEcocModel.Trained)
-        cellPredictedLabelsTmp = [cellPredictedLabelsTmp predict(cpEcocModel.Trained{i}, features')];
+        cellPredictedLabelsTmp = [cellPredictedLabelsTmp predict(cpEcocModel.Trained{i}, features)];
     end
     cellPredictedLabels = [];
     for j=1:length(cellPredictedLabelsTmp)
