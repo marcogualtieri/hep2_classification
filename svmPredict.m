@@ -1,7 +1,7 @@
 clear; clc; close all;
 addpath('./utils');
 
-fprintf('-- SVM evaluate result --\n');
+fprintf('-- SVM predict result --\n');
 startTime = clock;
 
 load('./mat/svm_dataset');
@@ -30,42 +30,35 @@ else
     end
 end
 
-%%%% CELL LEVEL %%%%
-fprintf('-- Cell level --\n');
-EvaluateResults(cellRealLabels, cellPredictedLabels);
+% Group at image level
+allImageIds = unique([svmDataset.ImageId]);
 
-%%%% IMAGE LEVEL %%%%
-fprintf('\n-- Image level --\n');
-imageIds = unique([svmDataset.ImageId]);
+svmPredictionResults = [];
 
+imageIds = [];
 imageRealLabels = [];
 imagePredictedLabels = [];
-wrongImageIds = [];
-wrongImageRealLabels = [];
-wrongImagePredictedLabels = [];
 
-for imageCounter = 1:size(imageIds,2)
-    imageId = imageIds(imageCounter);
+for imageCounter = 1:size(allImageIds,2)
+    imageId = allImageIds(imageCounter);
     imageCellsPredictedLabels = cellPredictedLabels([svmDataset.ImageId]==imageId);
-    if(length(imageCellsPredictedLabels)>0)
-        imageRealLabel = unique(cellRealLabels([svmDataset.ImageId]==imageId));
-        imageRealLabels = [imageRealLabels imageRealLabel];
-        
+    if(~isempty(imageCellsPredictedLabels))
+        imageRealLabel = unique(cellRealLabels([svmDataset.ImageId]==imageId));      
         [unique_strings, ~, string_map] = unique(imageCellsPredictedLabels);
-        imagePredictedLabel = unique_strings(mode(string_map));
-        imagePredictedLabels = [imagePredictedLabels imagePredictedLabel];
-        
-        if(~strcmp(imageRealLabel,imagePredictedLabel))
-            wrongImageIds = [wrongImageIds imageId];
-            wrongImageRealLabels = [wrongImageRealLabels imageRealLabel];
-            wrongImagePredictedLabels = [wrongImagePredictedLabels imagePredictedLabel];
-        end
+        imagePredictedLabel = unique_strings(mode(string_map));        
+        svmPredictionResults = [svmPredictionResults ...
+            struct(...
+                'ImageIds', imageId, ...
+                'ImageRealLabels', imageRealLabel, ...
+                'ImagePredictedLabels', imagePredictedLabel ...
+        )];
     end
 end
-EvaluateResults(imageRealLabels, imagePredictedLabels);
 
-% Identify not correctly classified images
-
-fprintf('\n-- Wrongly classified images --\n');
-table(wrongImageIds', wrongImageRealLabels', wrongImagePredictedLabels', ...
+% Print prediction result
+table([svmPredictionResults.ImageIds]', {svmPredictionResults.ImageRealLabels}', {svmPredictionResults.ImagePredictedLabels}', ...
         'VariableNames', {'ImageId', 'Real', 'Predicted'})
+    
+% Save prediction result
+save('./mat/svm_prediction_results','svmPredictionResults');
+fprintf('Results saved in /mat/svm_prediction_results \n');

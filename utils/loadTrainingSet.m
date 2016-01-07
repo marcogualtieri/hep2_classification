@@ -43,6 +43,13 @@
             validation_labels{counter} = configuration.patterns(pattern_id);
             image_ids(counter) = validation_set(l, ids_column);
             counter = counter + 1;
+        elseif(isnan(pattern_id)) 
+            % not labeled image
+            validation_labels{counter} = 'Unlabeled';
+            image_ids(counter) = validation_set(l, ids_column);
+            counter = counter + 1;
+        else 
+           % class not to be considered
         end
     end
 
